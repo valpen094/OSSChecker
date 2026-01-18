@@ -8,7 +8,6 @@ public class ReportGenerator
     {
         var sb = new StringBuilder();
         sb.AppendLine($"# OSS Vulnerability Report: {packageName}");
-        sb.AppendLine($"**Generated on:** {DateTime.Now}");
         sb.AppendLine($"**Source:** [OSV.dev](https://osv.dev)");
         sb.AppendLine("");
 
@@ -94,7 +93,7 @@ public class ReportGenerator
             sb.AppendLine("No vulnerabilities found in the checked versions.");
         }
 
-        var fileName = $"Report_{packageName}_{DateTime.Now:yyyyMMddHHmmss}.md";
+        var fileName = $"Report_{packageName}.md";
         
         try
         {
