@@ -45,7 +45,7 @@ class Program
                     Console.WriteLine($"[{i + 1}] {candidates[i]}");
                 }
                 
-                // Allow user to choose, or type exact name if not in list
+                // Allow user to choose
                 Console.WriteLine("\nSelect a number to check, or press ENTER to search using the first result default, or type a custom name:");
                 Console.Write("> ");
                 var selection = Console.ReadLine()?.Trim();
@@ -73,32 +73,43 @@ class Program
             if (vulnerabilities.Count > 0)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"\n[WARNING] Found vulnerabilities in {vulnerabilities.Count} version(s) of '{targetPackage}':");
+                Console.WriteLine($"\n[WARNING] Found {vulnerabilities.Count} vulnerability record(s) for '{targetPackage}':");
                 Console.ResetColor();
 
-                // Display first 10 to avoid console spam if many
-                foreach (var v in vulnerabilities.Take(20))
+                foreach (var v in vulnerabilities)
                 {
-                    Console.WriteLine($"- {v}");
+                    Console.WriteLine("--------------------------------------------------");
+                    Console.WriteLine($"ID:      {v.Id}");
+                    if (v.CveIds.Count > 0)
+                    {
+                        Console.WriteLine($"CVE:     {string.Join(", ", v.CveIds)}");
+                    }
+                    Console.WriteLine($"Summary: {v.Summary}");
+                    Console.WriteLine($"URL:     {v.DetailsUrl}");
+                    Console.WriteLine($"Affected Versions ({v.AffectedVersions.Count}):");
+                    
+                    // Display versions compactly in console
+                    if (v.AffectedVersions.Count > 10)
+                    {
+                        var firstFew = string.Join(", ", v.AffectedVersions.Take(10));
+                        Console.WriteLine($"  {firstFew} ... and {v.AffectedVersions.Count - 10} more (see report)");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"  {string.Join(", ", v.AffectedVersions)}");
+                    }
                 }
-                if (vulnerabilities.Count > 20)
-                {
-                    Console.WriteLine($"... and {vulnerabilities.Count - 20} more.");
-                }
-
-                // 4. Generate Report
-                ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
+                Console.WriteLine("--------------------------------------------------");
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine($"\n[SAFE] No vulnerabilities reported for '{targetPackage}' in OSV database (Nuget ecosystem).");
                 Console.ResetColor();
-                
-                // Also generate a "clean" report or ask user? 
-                // Requirement says "output result to text file", implies always.
-                ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
             }
+            
+            // 4. Generate Report (Always)
+            ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
         }
         
         Console.WriteLine("Exiting...");
