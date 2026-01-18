@@ -14,27 +14,70 @@ class Program
         var vulnService = new VulnerabilityService();
         var searchService = new PackageSearchService();
 
+        string currentEcosystem = "NuGet"; // Default
+
         while (true)
         {
-            Console.WriteLine("\nPlease enter the OSS name (or part of it) to check (ENTER to exit):");
+            Console.WriteLine($"\nCurrent Ecosystem: {currentEcosystem}");
+            Console.WriteLine("Select action:");
+            Console.WriteLine("[1] Search/Check Package");
+            Console.WriteLine("[2] Switch Ecosystem");
+            Console.WriteLine("[Q] Quit");
+            Console.Write("> ");
+            var action = Console.ReadLine()?.Trim().ToUpper();
+
+            if (action == "Q") break;
+            
+            if (action == "2")
+            {
+                Console.WriteLine("\nSelect Ecosystem:");
+                Console.WriteLine("[1] NuGet (.NET)");
+                Console.WriteLine("[2] npm (JS/Node)");
+                Console.WriteLine("[3] PyPI (Python)");
+                Console.WriteLine("[4] Maven (Java)");
+                Console.WriteLine("[5] Go (Golang)");
+                Console.WriteLine("[6] crates.io (Rust)");
+                Console.WriteLine("[7] RubyGems (Ruby)");
+                Console.WriteLine("[8] Packagist (PHP)");
+                Console.WriteLine("[9] Pub (Dart/Flutter)");
+                Console.Write("> ");
+                var ecoSelection = Console.ReadLine()?.Trim();
+                switch (ecoSelection)
+                {
+                    case "1": currentEcosystem = "NuGet"; break;
+                    case "2": currentEcosystem = "npm"; break;
+                    case "3": currentEcosystem = "PyPI"; break;
+                    case "4": currentEcosystem = "Maven"; break;
+                    case "5": currentEcosystem = "Go"; break;
+                    case "6": currentEcosystem = "crates.io"; break;
+                    case "7": currentEcosystem = "RubyGems"; break;
+                    case "8": currentEcosystem = "Packagist"; break;
+                    case "9": currentEcosystem = "Pub"; break;
+                    default: Console.WriteLine("Invalid selection, keeping current."); break;
+                }
+                continue;
+            }
+
+            if (action != "1" && !string.IsNullOrEmpty(action)) continue; 
+
+            Console.WriteLine($"\nEnter the {currentEcosystem} package name to check:");
+            if (currentEcosystem == "PyPI" || currentEcosystem == "Go") Console.WriteLine("(Note: Exact match required for validity check in this ecosystem)");
+            
             Console.Write("> ");
             var input = Console.ReadLine()?.Trim();
 
-            if (string.IsNullOrEmpty(input))
-            {
-                break;
-            }
+            if (string.IsNullOrEmpty(input)) continue;
 
-            Console.WriteLine($"\nSearching for '{input}' in NuGet ecosystem...");
+            Console.WriteLine($"\nSearching for '{input}' in {currentEcosystem} ecosystem...");
             
             // 1. Search for package candidates
-            var candidates = await searchService.SearchPackagesAsync(input);
+            var candidates = await searchService.SearchPackagesAsync(input, currentEcosystem);
 
             string targetPackage = "";
 
             if (candidates.Count == 0)
             {
-                Console.WriteLine("No packages found. Trying to query OSV directly with the input name...");
+                Console.WriteLine($"No candidates found in {currentEcosystem}. Using input '{input}' directly.");
                 targetPackage = input;
             }
             else
@@ -64,10 +107,10 @@ class Program
                 }
             }
 
-            Console.WriteLine($"\nChecking vulnerabilities for: {targetPackage} ...");
+            Console.WriteLine($"\nChecking vulnerabilities for: {targetPackage} ({currentEcosystem}) ...");
             
             // 2. Check vulnerabilities
-            var vulnerabilities = await vulnService.CheckVulnerabilitiesAsync(targetPackage);
+            var vulnerabilities = await vulnService.CheckVulnerabilitiesAsync(targetPackage, currentEcosystem);
 
             // 3. Display results
             if (vulnerabilities.Count > 0)
