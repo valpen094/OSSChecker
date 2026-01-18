@@ -155,7 +155,7 @@ class Program
             // User requirement: Create report if package exists (even if safe), skip only if search had no hits.
             if (candidates.Count > 0)
             {
-                ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
+                ReportGenerator.GenerateReport(targetPackage, currentEcosystem, vulnerabilities);
             }
             else
             {

@@ -4,10 +4,10 @@ namespace OSSChecker;
 
 public class ReportGenerator
 {
-    public static void GenerateReport(string packageName, List<VulnerabilityRecord> vulnerabilities)
+    public static void GenerateReport(string packageName, string ecosystem, List<VulnerabilityRecord> vulnerabilities)
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"# OSS Vulnerability Report: {packageName}");
+        sb.AppendLine($"# OSS Vulnerability Report: {packageName} ({ecosystem})");
         sb.AppendLine($"**Source:** [OSV.dev](https://osv.dev)");
         sb.AppendLine("");
 
@@ -99,7 +99,7 @@ public class ReportGenerator
             Directory.CreateDirectory(reportDir);
         }
 
-        var fileName = Path.Combine(reportDir, $"Report_{packageName}.md");
+        var fileName = Path.Combine(reportDir, $"Report_{ecosystem}_{packageName}.md");
         
         try
         {
