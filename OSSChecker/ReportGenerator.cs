@@ -93,7 +93,13 @@ public class ReportGenerator
             sb.AppendLine("No vulnerabilities found in the checked versions.");
         }
 
-        var fileName = $"Report_{packageName}.md";
+        var reportDir = "Reports";
+        if (!Directory.Exists(reportDir))
+        {
+            Directory.CreateDirectory(reportDir);
+        }
+
+        var fileName = Path.Combine(reportDir, $"Report_{packageName}.md");
         
         try
         {

@@ -151,8 +151,16 @@ class Program
                 Console.ResetColor();
             }
             
-            // 4. Generate Report (Always)
-            ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
+            // 4. Generate Report
+            // User requirement: Create report if package exists (even if safe), skip only if search had no hits.
+            if (candidates.Count > 0)
+            {
+                ReportGenerator.GenerateReport(targetPackage, vulnerabilities);
+            }
+            else
+            {
+                 Console.WriteLine($"\nPackage source not found (no search hits). Skipping report generation.");
+            }
         }
         
         Console.WriteLine("Exiting...");
