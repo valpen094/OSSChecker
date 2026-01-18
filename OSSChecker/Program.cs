@@ -4,7 +4,7 @@ namespace OSSChecker;
 
 class Program
 {
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         Console.WriteLine("========================================");
@@ -73,7 +73,7 @@ class Program
             // 1. Search for package candidates
             var candidates = await searchService.SearchPackagesAsync(input, currentEcosystem);
 
-            string targetPackage = "";
+            string targetPackage;
 
             if (candidates.Count == 0)
             {

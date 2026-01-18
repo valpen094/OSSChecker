@@ -29,11 +29,11 @@ public class PackageSearchService
             "rubygems" => await SearchRubyGemsAsync(searchTerm),
             "packagist" => await SearchPackagistAsync(searchTerm),
             "pub" => await SearchPubAsync(searchTerm),
-            _ => new List<string>()
+            _ => []
         };
     }
 
-    private async Task<List<string>> SearchNuGetAsync(string searchTerm)
+    private static async Task<List<string>> SearchNuGetAsync(string searchTerm)
     {
         var results = new List<string>();
         try
